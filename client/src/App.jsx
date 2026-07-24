@@ -9,6 +9,7 @@ function App() {
   const [tasks, setTasks] = useState([]);
   const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -55,8 +56,9 @@ function App() {
   async function addTask(e) {
     e.preventDefault();
     const trimmed = title.trim();
-    if (!trimmed) return;
+    if (!trimmed || submitting) return;
 
+    setSubmitting(true);
     try {
       const res = await handleResponse(
         await fetch(API_URL, {
@@ -71,6 +73,8 @@ function App() {
       setTitle('');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -126,8 +130,11 @@ function App() {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Ex: Préparer l'entretien"
             required
+            disabled={submitting}
           />
-          <button type="submit">Ajouter</button>
+          <button type="submit" disabled={submitting}>
+            {submitting ? 'Ajout...' : 'Ajouter'}
+          </button>
         </div>
       </form>
 
