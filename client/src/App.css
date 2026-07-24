@@ -8,7 +8,15 @@
 .app h1 {
   font-size: 28px;
   letter-spacing: normal;
-  margin: 0 0 24px;
+  margin: 0;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .task-form {
@@ -22,6 +30,42 @@
   font-size: 14px;
   font-weight: 600;
   color: var(--text-h);
+}
+
+.task-form input[type='text'],
+.task-form input[type='password'] {
+  padding: 10px 12px;
+  font-size: 16px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-h);
+  margin-bottom: 4px;
+}
+
+.task-form > button[type='submit'] {
+  align-self: flex-start;
+  padding: 10px 16px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.task-form > button[type='submit']:hover {
+  border-color: var(--accent-border);
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px;
+  text-decoration: underline;
 }
 
 .task-form-row {

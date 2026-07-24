@@ -14,7 +14,9 @@ function parseId(req, res) {
 }
 
 router.get('/', (req, res) => {
-  const tasks = db.prepare('SELECT * FROM tasks ORDER BY created_at DESC').all();
+  const tasks = db
+    .prepare('SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC')
+    .all(req.user.id);
   res.json(tasks);
 });
 
@@ -26,7 +28,9 @@ router.post('/', (req, res) => {
   if (title.trim().length > MAX_TITLE_LENGTH) {
     return res.status(400).json({ error: `title must be at most ${MAX_TITLE_LENGTH} characters` });
   }
-  const result = db.prepare('INSERT INTO tasks (title) VALUES (?)').run(title.trim());
+  const result = db
+    .prepare('INSERT INTO tasks (title, user_id) VALUES (?, ?)')
+    .run(title.trim(), req.user.id);
   const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json(task);
 });
@@ -35,7 +39,7 @@ router.put('/:id', (req, res) => {
   const id = parseId(req, res);
   if (id === null) return;
 
-  const existing = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
+  const existing = db.prepare('SELECT * FROM tasks WHERE id = ? AND user_id = ?').get(id, req.user.id);
   if (!existing) return res.status(404).json({ error: 'task not found' });
 
   let title = existing.title;
@@ -59,7 +63,7 @@ router.delete('/:id', (req, res) => {
   const id = parseId(req, res);
   if (id === null) return;
 
-  const existing = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
+  const existing = db.prepare('SELECT * FROM tasks WHERE id = ? AND user_id = ?').get(id, req.user.id);
   if (!existing) return res.status(404).json({ error: 'task not found' });
 
   db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
